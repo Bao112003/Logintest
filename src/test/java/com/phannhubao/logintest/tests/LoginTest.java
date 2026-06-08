@@ -6,6 +6,11 @@ import org.testng.annotations.Test;
 
 public class LoginTest extends BaseTest {
 
+    @Test(description = "Intentional failure used to demonstrate test reporting")
+    public void intentionalFailureForReport() {
+        Assert.fail("Intentional failure for report demonstration");
+    }
+
     @Test(description = "Login succeeds with valid credentials")
     public void loginSuccessfully() {
         LoginPage loginPage = new LoginPage(driver);
