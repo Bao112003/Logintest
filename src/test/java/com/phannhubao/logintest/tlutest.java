@@ -44,15 +44,15 @@ public class tlutest {
     @Test
     public void testLoginAccount1() {
         assertLoginSucceeds(
-                requiredEnvironmentVariable("TLU_USERNAME"),
-                requiredEnvironmentVariable("TLU_PASSWORD_1"));
+                requiredEnvironmentVariable("2351067806"),
+                requiredEnvironmentVariable("Bao112003@"));
     }
 
     @Test
     public void testLoginAccount2() {
         assertLoginSucceeds(
-                requiredEnvironmentVariable("TLU_USERNAME"),
-                requiredEnvironmentVariable("TLU_PASSWORD_2"));
+                requiredEnvironmentVariable("2351067806"),
+                requiredEnvironmentVariable("0336040785"));
     }
 
     private void assertLoginSucceeds(String username, String password) {
