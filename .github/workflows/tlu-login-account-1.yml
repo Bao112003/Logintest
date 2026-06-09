@@ -1,4 +1,4 @@
-name: TLU Login Failure
+name: TLU Login Account 1
 
 on:
   push:
@@ -13,12 +13,14 @@ permissions:
   contents: read
 
 jobs:
-  login-failure:
-    name: Test invalid login
+  login-account-1:
+    name: Test account 1
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       CI: "true"
+      TLU_USERNAME: ${{ secrets.TLU_USERNAME }}
+      TLU_PASSWORD_1: ${{ secrets.TLU_PASSWORD_1 }}
 
     steps:
       - name: Checkout repository
@@ -31,14 +33,14 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Run invalid login test
-        run: bash mvnw --batch-mode --no-transfer-progress -Dtest=tlutest#testLoginFailure test
+      - name: Test login account 1
+        run: bash mvnw --batch-mode --no-transfer-progress -Dtest=tlutest#testLoginAccount1 test
 
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: tlu-login-failure-report
+          name: tlu-login-account-1-report
           path: target/surefire-reports/
           if-no-files-found: warn
           retention-days: 14

@@ -42,17 +42,23 @@ public class tlutest {
     }
 
     @Test
-    public void testLoginSuccess() {
-        Assert.assertTrue(
-                performLogin("2351067086", "Bao112003@"),
-                "Login should succeed with valid credentials");
+    public void testLoginAccount1() {
+        assertLoginSucceeds(
+                requiredEnvironmentVariable("TLU_USERNAME"),
+                requiredEnvironmentVariable("TLU_PASSWORD_1"));
     }
 
     @Test
-    public void testLoginFailure() {
-        Assert.assertFalse(
-                performLogin("2351067086", "0336040785"),
-                "Login should be rejected with an invalid password");
+    public void testLoginAccount2() {
+        assertLoginSucceeds(
+                requiredEnvironmentVariable("TLU_USERNAME"),
+                requiredEnvironmentVariable("TLU_PASSWORD_2"));
+    }
+
+    private void assertLoginSucceeds(String username, String password) {
+        Assert.assertTrue(
+                performLogin(username, password),
+                "GitHub marks this test as failed because login was not successful");
     }
 
     private boolean performLogin(String username, String password) {
@@ -111,5 +117,13 @@ public class tlutest {
 
     private boolean containsIgnoreCase(String value, String expected) {
         return value != null && value.toLowerCase().contains(expected);
+    }
+
+    private String requiredEnvironmentVariable(String name) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Missing required environment variable: " + name);
+        }
+        return value;
     }
 }
