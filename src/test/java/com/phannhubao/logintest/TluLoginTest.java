@@ -3,6 +3,7 @@ package com.phannhubao.logintest;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -47,14 +48,16 @@ public class TluLoginTest {
     }
 
     @Test
+    @DisplayName("Login Account 1")
     public void testLoginAccount1() {
-        System.out.println("Running login test 1...");
+        System.out.println("Running: Login Account 1");
         performLogin("2351067086", "Bao112003@");
     }
 
     @Test
+    @DisplayName("Login Account 2")
     public void testLoginAccount2() {
-        System.out.println("Running login test 2...");
+        System.out.println("Running: Login Account 2");
         performLogin("2351067086", "077205009740");
     }
 
