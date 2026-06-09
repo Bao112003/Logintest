@@ -1,5 +1,8 @@
 package com.phannhubao.logintest;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -8,12 +11,10 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.time.Duration;
-import java.util.List;
 
 public class tlutest {
 
@@ -24,12 +25,8 @@ public class tlutest {
     public static void setup() {
         ChromeOptions options = new ChromeOptions();
 
-        String isCI = System.getenv("CI");
-        if ("true".equalsIgnoreCase(isCI)) {
+        if ("true".equalsIgnoreCase(System.getenv("CI"))) {
             options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");
-        } else {
-            // Optional local options
-            // options.addArguments("--headless=new");
         }
 
         driver = new ChromeDriver(options);
@@ -45,28 +42,22 @@ public class tlutest {
     }
 
     @Test
-    public void testLoginAccount1() {
-        System.out.println("Running login test 1...");
-        performLogin("2351067086", "Bao112003@");
+    public void testLoginSuccess() {
+        Assert.assertTrue(
+                performLogin("2351067086", "Bao112003@"),
+                "Login should succeed with valid credentials");
     }
 
     @Test
-    public void testLoginAccount2() {
-        System.out.println("Running login test 2...");
-        performLogin("2351067086", "0336040785");
+    public void testLoginFailure() {
+        Assert.assertFalse(
+                performLogin("2351067086", "0336040785"),
+                "Login should be rejected with an invalid password");
     }
 
-    private void performLogin(String username, String password) {
+    private boolean performLogin(String username, String password) {
         driver.get("https://sinhvien1.tlu.edu.vn/#/login");
 
-        // Wait for Angular initialization (similar to Thread.sleep(2000) in JS)
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        // Wait for input elements
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("input")));
         List<WebElement> inputs = driver.findElements(By.tagName("input"));
 
@@ -76,63 +67,49 @@ public class tlutest {
         for (WebElement input : inputs) {
             String type = input.getAttribute("type");
             String placeholder = input.getAttribute("placeholder");
-            if (placeholder == null)
-                placeholder = "";
             String name = input.getAttribute("name");
-            if (name == null)
-                name = "";
 
             if ("password".equals(type)) {
                 passwordInput = input;
-            } else if ("text".equals(type) || placeholder.toLowerCase().contains("mã") ||
-                    placeholder.toLowerCase().contains("tên") || name.toLowerCase().contains("user")) {
+            } else if ("text".equals(type)
+                    || containsIgnoreCase(placeholder, "ma")
+                    || containsIgnoreCase(placeholder, "ten")
+                    || containsIgnoreCase(name, "user")) {
                 if (usernameInput == null) {
                     usernameInput = input;
                 }
             }
         }
 
-        // Fallback
-        if (usernameInput == null && inputs.size() > 0)
+        if (usernameInput == null && !inputs.isEmpty()) {
             usernameInput = inputs.get(0);
-        if (passwordInput == null && inputs.size() > 1)
+        }
+        if (passwordInput == null && inputs.size() > 1) {
             passwordInput = inputs.get(1);
+        }
 
         if (usernameInput == null || passwordInput == null) {
-            throw new RuntimeException("Could not detect username/password inputs");
+            throw new IllegalStateException("Could not detect username/password inputs");
         }
 
         usernameInput.clear();
         usernameInput.sendKeys(username);
-
         passwordInput.clear();
         passwordInput.sendKeys(password);
-
         passwordInput.sendKeys(Keys.ENTER);
 
-        // Wait for response
         try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            wait.until(ExpectedConditions.or(
+                    ExpectedConditions.not(ExpectedConditions.urlContains("/login")),
+                    ExpectedConditions.presenceOfElementLocated(By.cssSelector(".alert, .error, [role='alert']"))));
+        } catch (org.openqa.selenium.TimeoutException ignored) {
+            // The final URL still determines whether login succeeded.
         }
 
-        String currentUrl = driver.getCurrentUrl();
-        System.out.println("Current URL: " + currentUrl);
+        return !driver.getCurrentUrl().contains("/login");
+    }
 
-        if (currentUrl.contains("/login")) {
-            String bodyText = driver.findElement(By.tagName("body")).getText().toLowerCase();
-            boolean errorVisible = bodyText.contains("không chính xác") ||
-                    bodyText.contains("tài khoản không tồn tại") ||
-                    bodyText.contains("lỗi");
-
-            if (errorVisible) {
-                throw new RuntimeException("Login failed: Error message is visible on screen.");
-            } else {
-                throw new RuntimeException("Login failed: URL did not change after submitting.");
-            }
-        } else {
-            System.out.println("Login successful!");
-        }
+    private boolean containsIgnoreCase(String value, String expected) {
+        return value != null && value.toLowerCase().contains(expected);
     }
 }

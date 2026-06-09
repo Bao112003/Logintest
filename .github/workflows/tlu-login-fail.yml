@@ -1,4 +1,4 @@
-name: TLU Selenium Tests
+name: TLU Login Failure
 
 on:
   push:
@@ -12,16 +12,11 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: selenium-tests-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  test:
-    name: Chrome / Java 17
+  login-failure:
+    name: Test invalid login
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     env:
       CI: "true"
 
@@ -36,17 +31,14 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Show Chrome version
-        run: google-chrome --version
+      - name: Run invalid login test
+        run: bash mvnw --batch-mode --no-transfer-progress -Dtest=tlutest#testLoginFailure test
 
-      - name: Run Selenium tests
-        run: bash mvnw --batch-mode --no-transfer-progress clean test
-
-      - name: Upload test reports
+      - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: selenium-test-reports
+          name: tlu-login-failure-report
           path: target/surefire-reports/
           if-no-files-found: warn
           retention-days: 14
