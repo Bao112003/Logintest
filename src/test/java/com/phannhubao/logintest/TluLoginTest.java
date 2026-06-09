@@ -49,13 +49,13 @@ public class TluLoginTest {
     @Test
     public void testLoginAccount1() {
         System.out.println("Running login test 1...");
-        performLogin("2351067086", "Bao112003@");
+        performLogin("2351067118", "077205009741");
     }
 
     @Test
     public void testLoginAccount2() {
         System.out.println("Running login test 2...");
-        performLogin("2351067086", "123456789");
+        performLogin("2351067118", "077205009740");
     }
 
     private void performLogin(String username, String password) {
