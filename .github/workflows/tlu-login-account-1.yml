@@ -1,4 +1,5 @@
-name: TLU Login 
+name: TLU Login Account 1
+run-name: Check Login Account 1
 
 on:
   push:
@@ -8,7 +9,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  tlu-login-success:
+  login-account-1:
+    name: Check Account 1
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +23,7 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Run Login Success Test
-        run: mvn test -Dtest=TluLoginTest#testLoginAccount2
+      - name: Check Login Account 1
+        run: mvn test -Dtest=TluLoginTest#testLoginAccount1
         env:
           CI: true
