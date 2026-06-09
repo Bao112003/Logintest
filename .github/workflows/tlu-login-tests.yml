@@ -1,4 +1,4 @@
-name: TLU Login Failure
+name: TLU Login Tests
 
 on:
   push:
@@ -8,8 +8,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  tlu-login-fail:
+  login-test:
+    name: Login test - ${{ matrix.account.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        account:
+          - name: Account 1
+            method: testLoginAccount1
+          - name: Account 2
+            method: testLoginAccount2
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +30,7 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Run Login Failure Test
-        run: mvn test -Dtest=TluLoginTest#testLoginAccount1
+      - name: Run ${{ matrix.account.name }}
+        run: mvn test -Dtest=TluLoginTest#${{ matrix.account.method }}
         env:
           CI: true
