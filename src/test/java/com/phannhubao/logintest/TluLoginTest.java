@@ -51,14 +51,14 @@ public class TluLoginTest {
     @DisplayName("Login Account 1")
     public void testLoginAccount1() {
         System.out.println("Running: Login Account 1");
-        performLogin("2351067086", "Bao112003@");
+        performLogin("2351067086", "Bao112003");
     }
 
     @Test
     @DisplayName("Login Account 2")
     public void testLoginAccount2() {
         System.out.println("Running: Login Account 2");
-        performLogin("2351067086", "Bao112003@");
+        performLogin("2351067086", "Bao112003");
     }
 
     private void performLogin(String username, String password) {
